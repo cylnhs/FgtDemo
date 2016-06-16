@@ -1,0 +1,65 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+    <style name="Theme.DesignDemo" parent="Base.Theme.DesignDemo">
+    </style>
+    <style name="Base.Theme.DesignDemo" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#673AB7</item>
+        <item name="colorPrimaryDark">#512DA8</item>
+        <item name="colorAccent">#FF4081</item>
+    </style>
+<!--    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        &lt;!&ndash; Customize your theme here. &ndash;&gt;
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>-->
+    <!-- text style -->
+    <style name="TextStyleNormal">
+        <item name="android:textSize">@dimen/font_normal</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="TextStyleLarge">
+        <item name="android:textSize">@dimen/font_larger</item>
+        <item name="android:textColor">@color/textColorPrimary</item>
+    </style>
+
+    <style name="TextStylePrimary">
+        <item name="android:textSize">@dimen/font_large</item>
+        <item name="android:textColor">@color/textColorPrimary</item>
+    </style>
+
+    <style name="TextStyleSmall">
+        <item name="android:textSize">@dimen/font_normal</item>
+        <item name="android:textColor">@color/textColorSmall</item>
+    </style>
+
+    <style name="TextGrayStyleSmall">
+        <item name="android:textSize">@dimen/font_normal</item>
+        <item name="android:textColor">@color/gray</item>
+    </style>
+
+    <style name="TextGray600StyleSmall">
+        <item name="android:textSize">@dimen/font_normal</item>
+        <item name="android:textColor">@color/grey_600</item>
+    </style>
+
+    <style name="CollapsedStyle">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="ExpandedStyle">
+        <item name="android:textColor">@color/white</item>
+    </style>
+</resources>

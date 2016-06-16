@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/drawer_height_normal"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:background="?attr/colorPrimaryDark"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/padding_large">
+
+       <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/id_drawer_header_avatar"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_gravity="left"
+            fresco:roundAsCircle="true"
+            fresco:placeholderImage="@drawable/default_icon"
+            fresco:failureImage="@drawable/default_icon"
+            />
+
+        <TextView
+            android:id="@+id/id_drawer_header_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/title_username"
+            android:textAppearance="@style/TextStyleNormal"/>
+
+        <TextView
+            android:id="@+id/id_drawer_header_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_normal"
+            android:layout_marginTop="@dimen/margin_tiny"
+            android:text="@string/title_email"
+            android:textAppearance="@style/TextStyleNormal"/>
+
+    </LinearLayout>
+</FrameLayout>
