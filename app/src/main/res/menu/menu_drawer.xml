@@ -2,13 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/menu_dataupload"
+            android:icon="@drawable/ic_drawer_register_normal"
+            android:title="@string/menu_dataupload"/>
+        <item
             android:id="@+id/menu_users"
-            android:icon="@drawable/ic_repo"
+            android:icon="@drawable/ic_users"
             android:title="@string/menu_title_user"/>
         <item
             android:id="@+id/menu_repo"
-            android:icon="@drawable/ic_users"
+            android:icon="@drawable/ic_repo"
             android:title="@string/menu_title_repo"/>
+
         <item
             android:id="@+id/menu_trending"
             android:icon="@drawable/ic_trending"
@@ -17,10 +22,6 @@
             android:id="@+id/menu_netting"
             android:icon="@drawable/ic_drawer_explore_normal"
             android:title="@string/menu_netting"/>
-        <item
-            android:id="@+id/menu_dataupload"
-            android:icon="@drawable/ic_drawer_register_normal"
-            android:title="@string/menu_dataupload"/>
     </group>
 
     <item

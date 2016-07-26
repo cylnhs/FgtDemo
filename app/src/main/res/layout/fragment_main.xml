@@ -5,44 +5,9 @@
     android:orientation="vertical"
     android:gravity="center"
     tools:context="com.cyl.fgtdemo.view.Fragments.MainFragment">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        >
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/action_IP"/>
-        <EditText
-            android:id="@+id/IP"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/action_port"/>
-        <EditText
-            android:id="@+id/port"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-<!--<Button
-    android:id="@+id/btn"
-    android:layout_width="200dp"
-    android:layout_height="wrap_content"
-    android:background="@drawable/btnyn"
-    android:layout_marginTop="20dp"
-    android:textSize="18dp"
-    android:text="@string/action_connect"/>-->
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="72dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="25dp">
 
         <com.cyl.libraryview.ButtonRectangle
@@ -51,7 +16,17 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:background="#1E88E5"
-            android:text="连接"
+            android:text="open"
             />
     </RelativeLayout>
+    <com.cyl.libraryview.ButtonRectangle
+        android:id="@+id/button1"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_below="@id/button1"
+        android:layout_marginTop="40dp"
+        android:background="#1E88E5"
+        android:text="clsoe"
+        />
 </LinearLayout>

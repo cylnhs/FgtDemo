@@ -14,21 +14,33 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.cyl.fgtdemo.R;
+import com.cyl.fgtdemo.model.app.GlobalData;
+import com.cyl.fgtdemo.model.bean.WebSockecmd;
+import com.cyl.fgtdemo.model.http.ExampleClient;
 import com.cyl.fgtdemo.model.http.SocketClient;
 import com.cyl.libraryview.ButtonRectangle;
+import com.google.gson.Gson;
+
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 public class MainFragment extends Fragment {
 
 
 
-    private EditText IPaddress;
-    private EditText IPport;
-    private ButtonRectangle btn1;
+
+    private ButtonRectangle btn1,btn2;
 
     private Handler handler;
 
-    private String ipport;
+    public  SocketClient socketClient;
 
+    private byte[] bytes;
+    private byte[] devsn;
     public MainFragment() {
         // Required empty public constructor
     }
@@ -43,9 +55,12 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_main, null);
-        IPaddress=(EditText) view.findViewById(R.id.IP);
-        IPport=(EditText) view.findViewById(R.id.port);
         btn1=(ButtonRectangle) view.findViewById(R.id.button);
+        btn2=(ButtonRectangle) view.findViewById(R.id.button1);
+        bytes = GlobalData.getInstance().hexStringToBytes( GlobalData.getInstance().comm_psw);
+        devsn= GlobalData.getInstance().changeByte( GlobalData.getInstance().deviceNum);
+        socketClient=new SocketClient(GlobalData.getInstance().IPAddr,Integer.valueOf(GlobalData.getInstance().IPPort));
+        socketClient.SetMsgHandler(handler);
         handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -73,20 +88,24 @@ public class MainFragment extends Fragment {
                 }
             }
         };
-       btn1.setOnClickListener(new View.OnClickListener() {
+
+
+        btn1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ipport=IPport.getText().toString();
-                if(!ipport.isEmpty()&&!IPaddress.getText().toString().isEmpty()){
-                    SocketClient socketClient=new SocketClient(IPaddress.getText().toString(),Integer.valueOf(ipport));
-                    socketClient.SetMsgHandler(handler);
-                    //     socketClient.SendCommand();
-                    //     Toast.makeText(getContext(),IPaddress.getText(),Toast.LENGTH_SHORT).show();
-                }
+                 //   byte devsn[]=new byte[]{0x01,0x00,(byte)0xff,(byte)0xff};
+                 //   byte[] bytes=new byte[]{(byte) 0Xff,(byte)0xff,(byte)0xff,(byte)0xff};
+                    socketClient.SendCommand((byte) 0x80,bytes,devsn);
 
             }
         });
+        btn2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+                    socketClient.SendCommand((byte) 0x81,bytes,devsn);
+            }
+        });
         return view;
     }
 
@@ -105,5 +124,6 @@ public class MainFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
     }
+
 
 }

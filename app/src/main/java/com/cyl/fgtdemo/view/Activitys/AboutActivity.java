@@ -20,7 +20,6 @@ public class AboutActivity extends AppCompatActivity {
     // 颜色表
     private int[] mColors = {0xFFCCFF00, 0xFF6495ED, 0xFFE32636, 0xFF800000, 0xFF808000, 0xFFFF8C69, 0xFF808080,
             0xFFE6B800, 0xFF7CFC00};
-   // float array1[2][2]={{1.2,2.3},{1.2,2.3}};
     public static Intent getStartIntent(Context context) {
         Intent intent = new Intent(context, AboutActivity.class);
         return intent;

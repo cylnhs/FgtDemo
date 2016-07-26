@@ -23,6 +23,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.Activitys.AboutActivity" />
+        <activity android:name=".view.Activitys.StackActivity"></activity>
     </application>
 
 </manifest>

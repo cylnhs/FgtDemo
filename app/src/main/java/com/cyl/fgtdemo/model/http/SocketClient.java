@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import android.os.Handler;
+import android.util.Log;
 
 public class SocketClient {
 	
@@ -21,7 +22,7 @@ public class SocketClient {
 	public String ServerIP;
 	public int ServerPort;
 
-	public byte devsn[]=new byte[4];
+//	public byte devsn[]=new byte[]{0x01,0x00,(byte)0xff,(byte)0xff};
 	
 	private Handler msgHandler=null;
 
@@ -31,7 +32,7 @@ public class SocketClient {
 	private DataOutputStream dataout; 
 	private DataInputStream datain;
 	private byte inpbuf[]=new byte[1024];	//接收缓存
-	private byte oupbuf[]=new byte[1024];	//发送缓存
+	private byte oupbuf[]=new byte[18];	//发送缓存
 	private int inpsize=0;
 	private int oupsize=0;
 	private byte ui[]=new byte[38];
@@ -109,62 +110,48 @@ public class SocketClient {
 		byte[] bytes = { b1, b2, b3, b4 };
 		return bytes;
 	}
-	
-	private int calcCheckSum(byte[] buffer,int offset,int size) {
-		int sum=0;
-		for(int i=0;i<size;i++) {
-			sum=sum+buffer[offset+i];
-		}
-		sum = (((~sum)+1) & 0x0000FFFF);
-		return (sum & 0x0000ffff);
-	}
-	
-	public void SendCommand(byte cmdid,byte val,byte[] buffer,int size,byte[] extbuf,int extsize){
-		int tsize=12+size+extsize;
-		oupbuf[0]=0x24; //TAG
-		oupbuf[1]=0x23;
-		oupbuf[2]=0x00; //CRC
-		oupbuf[3]=0x00;
-		oupbuf[4]=(byte) (((tsize) << 24) >> 24); //SIZE
-		oupbuf[5]=(byte) (((tsize) << 16) >> 24);
-		oupbuf[6]=cmdid;//CMD
-		oupbuf[7]=0x00;	//RET
-		if(cmdid==0x13){
-			tsize=5+size+extsize;
-			oupbuf[4]=(byte) (((tsize) << 24) >> 24); //SIZE
-			oupbuf[5]=(byte) (((tsize) << 16) >> 24);
-			System.arraycopy(devsn,0, oupbuf, 8, 4);
-			oupbuf[12]=val;
-			if(size>0)
-				System.arraycopy(buffer,0, oupbuf, 13, size);
-			if(extsize>0)
-				System.arraycopy(extbuf,0, oupbuf, 13+size, extsize);			
-		}else{
-			tsize=4+size+extsize;
-			oupbuf[4]=(byte) (((tsize) << 24) >> 24); //SIZE
-			oupbuf[5]=(byte) (((tsize) << 16) >> 24);
-			System.arraycopy(devsn,0, oupbuf, 8, 4);
-			if(size>0)
-				System.arraycopy(buffer,0, oupbuf, 12, size);
-			if(extsize>0)
-				System.arraycopy(extbuf,0, oupbuf, 12+size, extsize);
-		}
-		int sum=calcCheckSum(oupbuf,4,tsize+4);
-		oupbuf[2]=(byte) (((sum) << 24) >> 24); //CRC
-		oupbuf[3]=(byte) (((sum) << 16) >> 24);
-		oupsize=8+tsize;
-		/*
-		if(!mIsLink){
-			Stop();
-			Start();
-			try {
-				Thread.currentThread();
-				Thread.sleep(1000);
-			}catch (InterruptedException e){
-				e.printStackTrace();
+
+	public static int CRC_XModem(byte[] bytes){//CRC16校验
+		int crc = 0x00;          // initial value
+		int polynomial = 0x1021;
+		for (int index = 0 ; index< 16; index++) {
+			byte b = bytes[index];
+			for (int i = 0; i < 8; i++) {
+				boolean bit = ((b   >> (7-i) & 1) == 1);
+				boolean c15 = ((crc >> 15    & 1) == 1);
+				crc <<= 1;
+				if (c15 ^ bit) crc ^= polynomial;
 			}
 		}
-		*/
+		crc &= 0xffff;
+		return crc;
+	}
+
+
+	public void SendCommand(byte cmdid,byte[] buffer,byte[] devsn)
+	{
+		oupbuf[0]=(byte)0xef; //包头
+		oupbuf[1]=0x01;
+		oupbuf[2]=0x00; //设备地址
+		oupbuf[3]=0x00;
+		oupbuf[4]=0x00;
+		oupbuf[5]=0x00;
+		oupbuf[6]=0x00;//通信密码
+		oupbuf[7]=0x00;
+		oupbuf[8]=0x00;
+		oupbuf[9]=0x00;
+		oupbuf[10]=0x01;//包标号
+		oupbuf[11]=0x00;
+		System.arraycopy(devsn,0, oupbuf, 2, 4);
+		System.arraycopy(buffer,0, oupbuf, 6, 4);
+		oupbuf[12]=cmdid;//发送指令
+		oupbuf[13]=0x01; //包标识
+		oupbuf[14]=0x00;  //数据长度
+		oupbuf[15]=0x00;
+		int sum=CRC_XModem(oupbuf);
+		oupbuf[16]=(byte)(((sum) << 24) >> 24);//CRC16校验
+		oupbuf[17]=(byte)(((sum) << 16) >> 24);
+		oupsize=18;
 		if(mIsLink){
 			if (socket != null && socket.isConnected())
 			{
@@ -183,12 +170,65 @@ public class SocketClient {
 			Start();
 		}
 	}
-	
+
+/*	public void SendCommand(byte cmdid,byte val,byte[] buffer,int size,byte[] extbuf,int extsize){
+		int tsize=12+size+extsize;
+		oupbuf[0]=(byte)0xef; //TAG
+		oupbuf[1]=0x01;
+		oupbuf[2]=0x00; //CRC
+		oupbuf[3]=0x00;
+		oupbuf[4]=(byte) (((tsize) << 24) >> 24); //SIZE
+		oupbuf[5]=(byte) (((tsize) << 16) >> 24);
+		oupbuf[6]=cmdid;//CMD
+		oupbuf[7]=0x00;	//RET
+		if(cmdid==0x13){
+			tsize=5+size+extsize;
+			oupbuf[4]=(byte) (((tsize) << 24) >> 24); //SIZE
+			oupbuf[5]=(byte) (((tsize) << 16) >> 24);
+			System.arraycopy(devsn,0, oupbuf, 8, 4);
+			oupbuf[12]=val;
+			if(size>0)
+				System.arraycopy(buffer,0, oupbuf, 13, size);
+			if(extsize>0)
+				System.arraycopy(extbuf,0, oupbuf, 13+size, extsize);
+		}else{
+			tsize=4+size+extsize;
+			oupbuf[4]=(byte) (((tsize) << 24) >> 24); //SIZE
+			oupbuf[5]=(byte) (((tsize) << 16) >> 24);
+			System.arraycopy(devsn,0, oupbuf, 8, 4);
+			if(size>0)
+				System.arraycopy(buffer,0, oupbuf, 12, size);
+			if(extsize>0)
+				System.arraycopy(extbuf,0, oupbuf, 12+size, extsize);
+		}
+		int sum=calcCheckSum(oupbuf,4,tsize+4);
+		oupbuf[2]=(byte) (((sum) << 24) >> 24); //CRC
+		oupbuf[3]=(byte) (((sum) << 16) >> 24);
+		oupsize=8+tsize;
+		if(mIsLink){
+			if (socket != null && socket.isConnected())
+			{
+				handler.post(new Runnable() {
+					public void run() {
+						try
+						{
+							dataout.write(oupbuf,0,oupsize);
+						}catch (UnknownHostException e)	{
+						}catch (IOException e){
+						}
+					}
+				});
+			}
+		}else{
+			Start();
+		}
+	}*/
+
 	public void ReceiveData(byte[] buffer,int size){
-		if(size>=8)
-		if(buffer[0]==0x24&&buffer[1]==0x23){
-			switch(buffer[6]){
-			case 0x13:{
+		if(size>=18)
+		if(buffer[13]==0x07){
+			switch(buffer[12]){
+			case (byte) 0x80:{
 				if(buffer[7]==0x01){					
 					System.arraycopy(buffer,8, ui, 0, 38);
 					SendMessage(MSG_MATCH,1,38,ui);
@@ -199,6 +239,7 @@ public class SocketClient {
 				break;
 			}
 		}
+		//是否长连接
 		Stop();
 	}
 	
@@ -242,7 +283,7 @@ public class SocketClient {
 							if(len>0){
 								handler.post(new Runnable() {
 									public void run() {
-										ReceiveData(inpbuf,inpsize);
+									//	ReceiveData(inpbuf,inpsize);
 									}
 								});
 							}

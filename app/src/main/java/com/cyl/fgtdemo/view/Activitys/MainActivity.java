@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.cyl.fgtdemo.R;
+import com.cyl.fgtdemo.model.app.GlobalData;
 import com.cyl.fgtdemo.view.Fragments.MainFragment;
 import com.cyl.fgtdemo.view.Fragments.RecordFragment;
 import com.cyl.fgtdemo.view.Fragments.SecondFragment;
@@ -32,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private SecondFragment secondFragment;
     private ThridFragment thridFragment;
     private RecordFragment recordFragment;
-    private UploadFragment uploadFragment;
+    private UploadFragment repoFragment;
 
 
     @Override
@@ -40,13 +41,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        GlobalData.getInstance().SetContext(this);
+        GlobalData.getInstance().LoadConfig();
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView=(NavigationView) findViewById(R.id.navigation_view);
         setupToolbar();
        if (null != navigationView) {
             setupDrawerContent(navigationView);
         }
-        selectFragment(R.id.menu_repo);
+        selectFragment(R.id.menu_dataupload);
     }
     private void setupToolbar() {
         final ActionBar ab = getActionBarToolbar();
@@ -81,13 +84,21 @@ public class MainActivity extends AppCompatActivity {
             hideAllFragment(transaction);
         }
         switch (fragmentId) {
-            case R.id.menu_repo:
+            case R.id.menu_dataupload:
                 if (mainFragment == null) {
                     mainFragment = new MainFragment();
                     // todo diff with transaction.replace() ?
                     transaction.add(R.id.id_main_frame_container, mainFragment, "mian");
                 } else {
                     transaction.show(mainFragment);
+                }
+                break;
+            case R.id.menu_repo:
+                if (null == repoFragment) {
+                    repoFragment = new UploadFragment();
+                    transaction.add(R.id.id_main_frame_container, repoFragment, "dataupload");
+                } else {
+                    transaction.show(repoFragment);
                 }
                 break;
             case R.id.menu_users:
@@ -109,21 +120,13 @@ public class MainActivity extends AppCompatActivity {
             case R.id.menu_netting:
                 if (null == recordFragment) {
                     recordFragment = new RecordFragment();
-                    transaction.add(R.id.id_main_frame_container, recordFragment, "setting");
+                    transaction.add(R.id.id_main_frame_container, recordFragment, "netting");
                 } else {
                     transaction.show(recordFragment);
                 }
                 break;
-            case R.id.menu_dataupload:
-                if (null == uploadFragment) {
-                    uploadFragment = new UploadFragment();
-                    transaction.add(R.id.id_main_frame_container, uploadFragment, "setting");
-                } else {
-                    transaction.show(uploadFragment);
-                }
-                break;
             case R.id.menu_about:
-                startActivity(AboutActivity.getStartIntent(this));
+                startActivity(StackActivity.getStartIntent(this));
                 break;
         }
 
@@ -140,6 +143,14 @@ public class MainActivity extends AppCompatActivity {
 
         if (null != thridFragment) {
             transaction.hide(thridFragment);
+        }
+
+        if (null != repoFragment) {
+            transaction.hide(repoFragment);
+        }
+
+        if (null != recordFragment) {
+            transaction.hide(recordFragment);
         }
     }
         @Override
@@ -182,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
 
        if (position != 0) {
            position=0;
-           selectFragment(R.id.menu_repo);
+           selectFragment(R.id.menu_dataupload);
         } else {
             super.onBackPressed();
         }

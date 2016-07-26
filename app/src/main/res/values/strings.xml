@@ -3,10 +3,10 @@
     <string name="title_username">username</string>
     <string name="title_email">email</string>
     <string name="title_home">Home</string>
-    <string name="title_user">记录管理</string>
-    <string name="title_repo">用户管理</string>
+    <string name="title_user">用户管理</string>
+    <string name="title_repo">记录管理</string>
     <string name="menu_netting">系统设置</string>
-    <string name="menu_dataupload">数据传输</string>
+    <string name="menu_dataupload">远程开门</string>
 
     <!-- action -->
     <string name="action_enter">Enter</string>
@@ -14,6 +14,9 @@
     <string name="action_IP">服务器IP:</string>
     <string name="action_port">端口号:</string>
     <string name="action_connect">连接</string>
+    <string name="action_psw">通信密码:</string>
+    <string name="action_device">设备序号:</string>
+
     <!-- menu -->
     <string name="menu_title_user">@string/title_user</string>
     <string name="menu_title_repo">@string/title_repo</string>
