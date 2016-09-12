@@ -12,12 +12,15 @@ import android.net.Uri;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
+import com.cyl.fgtdemo.model.bean.RecordInfo;
+import com.cyl.fgtdemo.model.bean.UserInfo;
+
 public class GlobalData {
 	
 	private static GlobalData instance;
 	private Context pcontext=null;
 
-	private String	sDir=Environment.getExternalStorageDirectory() + "/OnePass";
+	private String	sDir=Environment.getExternalStorageDirectory() + "/FgtDemo";
 	private List<Uri> fsList;
 
 	public boolean	isonline=false;
@@ -30,8 +33,12 @@ public class GlobalData {
 	public int   deviceNum;
 	public String	AdminFingerprint="";
 	public String	AdminPassword="1010";
-	
-	public int rT ;
+
+	public List<RecordInfo> recordInfoList=new ArrayList();
+	public List<UserInfo> userInfoList=new ArrayList();
+
+	public List<Integer> userInfoID=new ArrayList();
+
 	
 	public static GlobalData getInstance() {
     	if(null == instance) {
@@ -56,7 +63,10 @@ public class GlobalData {
 	public String GetDir(){
 		return sDir;
 	}
-	
+
+	public void LoadRecordsList(){
+		recordInfoList=RecordFile.ReadFromFile(sDir+"/recordslist.dat");
+	}
     public void CreateDir() {
     	if(IsHaveSdCard()){    		
     		File destDir = new File(sDir);
@@ -64,9 +74,14 @@ public class GlobalData {
     			destDir.mkdirs();
     		}
     	}else{
+
     	}
+		RecordFile.CreateFile(sDir+"/recordslist.dat");
     }
-    
+
+	public void AppendRecord(RecordInfo rs){
+		RecordFile.AppendToFile(sDir+"/recordslist.dat",rs);
+	}
     public void LoadFileList() {
     	File file = new File(sDir);
 
@@ -105,7 +120,7 @@ public class GlobalData {
 		} 
 	}
 	
-  //��������
+     //保存设置
   	public void SaveConfig(){
       	SharedPreferences sp;
   		sp = PreferenceManager.getDefaultSharedPreferences(pcontext);
@@ -117,25 +132,22 @@ public class GlobalData {
 		edit.putInt("deviceNum",deviceNum);
   		edit.putString("DefaultUser",DefaultUser);
   		edit.putString("DefaultPassword",DefaultPassword);
-  		edit.putBoolean("IsOnline", isonline);
 
-  		
   		edit.commit();
 
       }
       
-  	//��ȡ����
+  	//获取设置
       public void LoadConfig(){
       	SharedPreferences sp;
   		sp = PreferenceManager.getDefaultSharedPreferences(pcontext);
 
   		IPAddr=sp.getString("IPAddr","192.168.1.10");
-		  IPPort=sp.getInt("IPPort", 8000);
+		IPPort=sp.getInt("IPPort", 8000);
   		DefaultUser=sp.getString("DefaultUser","admin");
   		DefaultPassword=sp.getString("DefaultPassword","1010");
-  		isonline=sp.getBoolean("IsOnline", false);
-		  comm_psw=sp.getString("comm_psw","FFFFFFFF");
-		  deviceNum=sp.getInt("deviceNum",1);
+		comm_psw=sp.getString("comm_psw","FFFFFFFF");
+		deviceNum=sp.getInt("deviceNum",65535);
       }
 
 
@@ -201,5 +213,19 @@ public class GlobalData {
 		bytes2[2]=(byte)(bytes[2]|0xff);
 		bytes2[3]=(byte)(bytes[3]|0xff);
 		return bytes2;
+	}
+
+
+	public int byteToInt2(byte[] b) {
+
+		int mask=0xff;
+		int temp=0;
+		int n=0;
+		for(int i=3;i>=0;i--){
+			n<<=8;
+			temp=b[i]&mask;
+			n|=temp;
+		}
+		return n;
 	}
 }

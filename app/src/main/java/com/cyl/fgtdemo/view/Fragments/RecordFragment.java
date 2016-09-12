@@ -10,15 +10,11 @@ import android.view.ViewGroup;
 
 import com.cyl.fgtdemo.R;
 
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
 
-/**
- * A fragment with a Google +1 button.
- * Activities that contain this fragment must implement the
- * {@link RecordFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link RecordFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
+
 public class RecordFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -69,6 +65,27 @@ public class RecordFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_record, container, false);
+  /*      WebSocketClient webSocketClient=new WebSocketClient("") {
+            @Override
+            public void onOpen(ServerHandshake handshakedata) {
+
+            }
+
+            @Override
+            public void onMessage(String message) {
+
+            }
+
+            @Override
+            public void onClose(int code, String reason, boolean remote) {
+
+            }
+
+            @Override
+            public void onError(Exception ex) {
+
+            }
+        };*/
 
 
         return view;

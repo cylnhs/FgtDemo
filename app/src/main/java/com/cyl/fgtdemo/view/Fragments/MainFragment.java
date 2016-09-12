@@ -93,8 +93,6 @@ public class MainFragment extends Fragment {
         btn1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                 //   byte devsn[]=new byte[]{0x01,0x00,(byte)0xff,(byte)0xff};
-                 //   byte[] bytes=new byte[]{(byte) 0Xff,(byte)0xff,(byte)0xff,(byte)0xff};
                     socketClient.SendCommand((byte) 0x80,bytes,devsn);
 
             }

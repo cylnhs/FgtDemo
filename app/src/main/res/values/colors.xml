@@ -12,7 +12,7 @@
     <color name="red">#FFFF432F</color>
     <color name="white">#FFFFFFFF</color>
     <color name="gray">#FFC0C0C0</color>
-
+    <color name="firebrick">#b22222</color><!--火砖色 -->
     <!-- text color -->
     <color name="textColorPrimary">@color/black</color>
     <color name="textColorSmall">@color/blue_300</color>

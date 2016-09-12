@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FgtDemo</string>
+    <string name="app_name">手机门禁</string>
     <string name="title_username">username</string>
     <string name="title_email">email</string>
     <string name="title_home">Home</string>
@@ -7,7 +7,7 @@
     <string name="title_repo">记录管理</string>
     <string name="menu_netting">系统设置</string>
     <string name="menu_dataupload">远程开门</string>
-
+    <string name="txt_count">记录数</string>
     <!-- action -->
     <string name="action_enter">Enter</string>
     <string name="action_settings">Settings</string>

@@ -112,7 +112,7 @@ public class ThridFragment extends Fragment {
             return false;
         }
         len=deviceNum.getText().toString().length();
-        if(len<=0||Integer.valueOf(deviceNum.getText().toString())>=65535){
+        if(len<=0||Integer.valueOf(deviceNum.getText().toString())>65536){
             Toast.makeText(getActivity(), "请输入正确设备编号(0-65535)", Toast.LENGTH_SHORT).show();
             return false;
         }

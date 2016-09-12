@@ -10,10 +10,15 @@ import java.net.UnknownHostException;
 import android.os.Handler;
 import android.util.Log;
 
+import com.cyl.fgtdemo.model.app.GlobalData;
+import com.cyl.fgtdemo.model.bean.RecordInfo;
+
 public class SocketClient {
 	
 	public final static byte MSG_STATUS=0x04;
 	public final static byte MSG_MATCH=0x13;
+	public final static byte MSG_REVICE=0x14;
+	public final static byte MSG_REVICEUSERID=0x15;
 	
 	public final static byte NET_LINK=0x01;
 	public final static byte NET_ERROR=0x02;
@@ -22,20 +27,19 @@ public class SocketClient {
 	public String ServerIP;
 	public int ServerPort;
 
-//	public byte devsn[]=new byte[]{0x01,0x00,(byte)0xff,(byte)0xff};
-	
 	private Handler msgHandler=null;
-
 	private Handler handler=new Handler();
 	private Socket socket=null;	
 	private boolean mIsLink=false; 
 	private DataOutputStream dataout; 
 	private DataInputStream datain;
 	private byte inpbuf[]=new byte[1024];	//接收缓存
-	private byte oupbuf[]=new byte[18];	//发送缓存
+	private byte oupbuf[]=new byte[26];	//发送缓存
 	private int inpsize=0;
 	private int oupsize=0;
-	private byte ui[]=new byte[38];
+	private byte ui[]=new byte[48];
+	private byte ul[]=new byte[520];
+
 	public SocketClient(String serverIP,int ServerPort){
 		this.ServerIP=serverIP;
 		this.ServerPort=ServerPort;
@@ -127,7 +131,54 @@ public class SocketClient {
 		return crc;
 	}
 
+	public static int CRC_XModem1(byte[] bytes){//CRC16校验
+		int crc = 0x00;          // initial value
+		int polynomial = 0x1021;
+		for (int index = 0 ; index< 24; index++) {
+			byte b = bytes[index];
+			for (int i = 0; i < 8; i++) {
+				boolean bit = ((b   >> (7-i) & 1) == 1);
+				boolean c15 = ((crc >> 15    & 1) == 1);
+				crc <<= 1;
+				if (c15 ^ bit) crc ^= polynomial;
+			}
+		}
+		crc &= 0xffff;
+		return crc;
+	}
 
+	public static int CRC_XModem2(byte[] bytes){//CRC16校验
+		int crc = 0x00;          // initial value
+		int polynomial = 0x1021;
+		for (int index = 0 ; index<20; index++) {
+			byte b = bytes[index];
+			for (int i = 0; i < 8; i++) {
+				boolean bit = ((b   >> (7-i) & 1) == 1);
+				boolean c15 = ((crc >> 15    & 1) == 1);
+				crc <<= 1;
+				if (c15 ^ bit) crc ^= polynomial;
+			}
+		}
+		crc &= 0xffff;
+		return crc;
+	}
+
+	public static int CRC_XModem3(byte[] bytes){//CRC16校验
+		int crc = 0x00;          // initial value
+		int polynomial = 0x1021;
+		for (int index = 0 ; index<18; index++) {
+			byte b = bytes[index];
+			for (int i = 0; i < 8; i++) {
+				boolean bit = ((b   >> (7-i) & 1) == 1);
+				boolean c15 = ((crc >> 15    & 1) == 1);
+				crc <<= 1;
+				if (c15 ^ bit) crc ^= polynomial;
+			}
+		}
+		crc &= 0xffff;
+		return crc;
+	}
+    //命令包发送
 	public void SendCommand(byte cmdid,byte[] buffer,byte[] devsn)
 	{
 		oupbuf[0]=(byte)0xef; //包头
@@ -171,40 +222,40 @@ public class SocketClient {
 		}
 	}
 
-/*	public void SendCommand(byte cmdid,byte val,byte[] buffer,int size,byte[] extbuf,int extsize){
-		int tsize=12+size+extsize;
-		oupbuf[0]=(byte)0xef; //TAG
+	public void SendData(byte cmdid,byte[] buffer,byte[] devsn,byte bs,int st,int dt)
+	{
+		oupbuf[0]=(byte)0xef; //包头
 		oupbuf[1]=0x01;
-		oupbuf[2]=0x00; //CRC
+		oupbuf[2]=0x00; //设备地址
 		oupbuf[3]=0x00;
-		oupbuf[4]=(byte) (((tsize) << 24) >> 24); //SIZE
-		oupbuf[5]=(byte) (((tsize) << 16) >> 24);
-		oupbuf[6]=cmdid;//CMD
-		oupbuf[7]=0x00;	//RET
-		if(cmdid==0x13){
-			tsize=5+size+extsize;
-			oupbuf[4]=(byte) (((tsize) << 24) >> 24); //SIZE
-			oupbuf[5]=(byte) (((tsize) << 16) >> 24);
-			System.arraycopy(devsn,0, oupbuf, 8, 4);
-			oupbuf[12]=val;
-			if(size>0)
-				System.arraycopy(buffer,0, oupbuf, 13, size);
-			if(extsize>0)
-				System.arraycopy(extbuf,0, oupbuf, 13+size, extsize);
-		}else{
-			tsize=4+size+extsize;
-			oupbuf[4]=(byte) (((tsize) << 24) >> 24); //SIZE
-			oupbuf[5]=(byte) (((tsize) << 16) >> 24);
-			System.arraycopy(devsn,0, oupbuf, 8, 4);
-			if(size>0)
-				System.arraycopy(buffer,0, oupbuf, 12, size);
-			if(extsize>0)
-				System.arraycopy(extbuf,0, oupbuf, 12+size, extsize);
-		}
-		int sum=calcCheckSum(oupbuf,4,tsize+4);
-		oupbuf[2]=(byte) (((sum) << 24) >> 24); //CRC
-		oupbuf[3]=(byte) (((sum) << 16) >> 24);
-		oupsize=8+tsize;
+		oupbuf[4]=0x00;
+		oupbuf[5]=0x00;
+		oupbuf[6]=0x00;//通信密码
+		oupbuf[7]=0x00;
+		oupbuf[8]=0x00;
+		oupbuf[9]=0x00;
+		oupbuf[10]=bs;//包标号
+		oupbuf[11]=0x00;
+		System.arraycopy(devsn,0, oupbuf, 2, 4);
+		System.arraycopy(buffer,0, oupbuf, 6, 4);
+		oupbuf[12]=cmdid;//发送指令
+		oupbuf[13]=0x01; //包标识
+		oupbuf[14]=0x08;  //数据长度
+		oupbuf[15]=0x00;
+		oupbuf[16]=0x00;  //数据起始点
+		oupbuf[17]=0x00;
+		oupbuf[18]=0x00;
+		oupbuf[19]=0x00;
+		oupbuf[20]=0x00;  //数据终点
+		oupbuf[21]=0x00;
+		oupbuf[22]=0x00;
+		oupbuf[23]=0x00;
+		System.arraycopy(changeByte(st),0, oupbuf, 16, 4);
+		System.arraycopy(changeByte(dt),0, oupbuf, 20, 4);
+		int sum=CRC_XModem1(oupbuf);
+		oupbuf[24]=(byte)(((sum) << 24) >> 24);//CRC16校验
+		oupbuf[25]=(byte)(((sum) << 16) >> 24);
+		oupsize=26;
 		if(mIsLink){
 			if (socket != null && socket.isConnected())
 			{
@@ -222,19 +273,149 @@ public class SocketClient {
 		}else{
 			Start();
 		}
-	}*/
+	}
 
+
+	public void SendData1(byte cmdid,byte[] buffer,byte[] devsn,byte bs,int st)
+	{
+		oupbuf[0]=(byte)0xef; //包头
+		oupbuf[1]=0x01;
+		oupbuf[2]=0x00; //设备地址
+		oupbuf[3]=0x00;
+		oupbuf[4]=0x00;
+		oupbuf[5]=0x00;
+		oupbuf[6]=0x00;//通信密码
+		oupbuf[7]=0x00;
+		oupbuf[8]=0x00;
+		oupbuf[9]=0x00;
+		oupbuf[10]=bs;//包标号
+		oupbuf[11]=0x00;
+		System.arraycopy(devsn,0, oupbuf, 2, 4);
+		System.arraycopy(buffer,0, oupbuf, 6, 4);
+		oupbuf[12]=cmdid;//发送指令
+		oupbuf[13]=0x01; //包标识
+		oupbuf[14]=0x04;  //数据长度
+		oupbuf[15]=0x00;
+		oupbuf[16]=0x00;  //数据起始点
+		oupbuf[17]=0x00;
+		oupbuf[18]=0x00;
+		oupbuf[19]=0x00;
+		System.arraycopy(changeByte(st),0, oupbuf, 18, 2);
+		int sum=CRC_XModem2(oupbuf);
+		oupbuf[20]=(byte)(((sum) << 24) >> 24);//CRC16校验
+		oupbuf[21]=(byte)(((sum) << 16) >> 24);
+		oupsize=22;
+		if(mIsLink){
+			if (socket != null && socket.isConnected())
+			{
+				handler.post(new Runnable() {
+					public void run() {
+						try
+						{
+							dataout.write(oupbuf,0,oupsize);
+						}catch (UnknownHostException e)	{
+						}catch (IOException e){
+						}
+					}
+				});
+			}
+		}else{
+			Start();
+		}
+	}
+
+	public void SendData2(byte cmdid,byte[] buffer,byte[] devsn,byte bs,int st)
+	{
+		oupbuf[0]=(byte)0xef; //包头
+		oupbuf[1]=0x01;
+		oupbuf[2]=0x00; //设备地址
+		oupbuf[3]=0x00;
+		oupbuf[4]=0x00;
+		oupbuf[5]=0x00;
+		oupbuf[6]=0x00;//通信密码
+		oupbuf[7]=0x00;
+		oupbuf[8]=0x00;
+		oupbuf[9]=0x00;
+		oupbuf[10]=bs;//包标号
+		oupbuf[11]=0x00;
+		System.arraycopy(devsn,0, oupbuf, 2, 4);
+		System.arraycopy(buffer,0, oupbuf, 6, 4);
+		oupbuf[12]=cmdid;//发送指令
+		oupbuf[13]=0x01; //包标识
+		oupbuf[14]=0x02;  //数据长度
+		oupbuf[15]=0x00;
+		oupbuf[16]=0x00;  //数据起始点
+		oupbuf[17]=0x00;
+		System.arraycopy(changeByte(st),0, oupbuf, 16, 2);
+		int sum=CRC_XModem3(oupbuf);
+		oupbuf[18]=(byte)(((sum) << 24) >> 24);//CRC16校验
+		oupbuf[19]=(byte)(((sum) << 16) >> 24);
+		oupsize=20;
+		if(mIsLink){
+			if (socket != null && socket.isConnected())
+			{
+				handler.post(new Runnable() {
+					public void run() {
+						try
+						{
+							dataout.write(oupbuf,0,oupsize);
+						}catch (UnknownHostException e)	{
+						}catch (IOException e){
+						}
+					}
+				});
+			}
+		}else{
+			Start();
+		}
+	}
 	public void ReceiveData(byte[] buffer,int size){
 		if(size>=18)
 		if(buffer[13]==0x07){
 			switch(buffer[12]){
-			case (byte) 0x80:{
-				if(buffer[7]==0x01){					
-					System.arraycopy(buffer,8, ui, 0, 38);
-					SendMessage(MSG_MATCH,1,38,ui);
+				case (byte) 0x64:{
+					if(buffer[16]==0x00&buffer[17]==0x00){
+						if(buffer[10]==(byte)0x01){
+							System.arraycopy(buffer, 18, ui, 0, 2);
+							SendMessage(MSG_MATCH, 1, 2, ui);
+						}else{
+							byte[] st={buffer[14],buffer[15],0x00,0x00};
+							int sb=GlobalData.getInstance().byteToInt2(st);
+						    byte ud[]=new byte[sb-2];
+							System.arraycopy(buffer, 18, ud, 0, sb-2);
+							SendMessage(MSG_REVICEUSERID, 1, sb-2, ud);
+							Log.i("gjkfdgksdg",sb-2+"");
+						}
+					}else{
+							SendMessage(MSG_REVICE,0,0,null);
+					}
+			}
+					break;
+			case (byte) 0xa0:{
+				if(buffer[16]==0x00&buffer[17]==0x00){
+					if(buffer[10]==(byte)0x01){
+							System.arraycopy(buffer, 18, ui, 0, 12);
+							SendMessage(MSG_MATCH, 1, 12, ui);
+					}else{
+						System.arraycopy(buffer, 10, ul, 0, 520);
+							SendMessage(MSG_REVICE, 1, 520, ul);
+					}
 				}else{
-					SendMessage(MSG_MATCH,0,0,null);
+				//	SendMessage(MSG_REVICE,0,0,null);
 				}
+				}
+				break;
+				case (byte) 0x79:{
+					if(buffer[16]==0x00&buffer[17]==0x00){
+						if(buffer[10]==(byte)0x01){
+							System.arraycopy(buffer, 18, ui, 0, 48);
+							SendMessage(MSG_REVICE, 1, 48, ui);
+						}else{
+							SendMessage(MSG_REVICE,0,0,null);
+						}
+					}else{
+							SendMessage(MSG_REVICE,0,0,null);
+					}
 				}
 				break;
 			}
@@ -249,11 +430,9 @@ public class SocketClient {
 				InetAddress serverAddr = InetAddress.getByName(ServerIP);
 				handler.post(new Runnable() {
 					public void run() {
-						//textStatus.setText("���ӷ�����");
 						SendMessage(MSG_STATUS,NET_LINK,0,null);
 					}
 				});
-
 				socket = new Socket(serverAddr, ServerPort);				
 				try{
 					mIsLink=true;
@@ -283,7 +462,7 @@ public class SocketClient {
 							if(len>0){
 								handler.post(new Runnable() {
 									public void run() {
-									//	ReceiveData(inpbuf,inpsize);
+										ReceiveData(inpbuf,inpsize);
 									}
 								});
 							}
@@ -293,7 +472,7 @@ public class SocketClient {
 						handler.post(new Runnable() {
 							public void run() {
 								//textStatus.setText("�������Ͽ�");
-								SendMessage(MSG_STATUS,NET_UNLINK,1,null);
+								SendMessage(NET_UNLINK,NET_UNLINK,1,null);
 								mIsLink=false;
 							}
 						});
@@ -303,7 +482,7 @@ public class SocketClient {
 						handler.post(new Runnable() {
 							public void run() {
 								//textStatus.setText("�������3:" + error);
-								SendMessage(MSG_STATUS,NET_ERROR,3,null);
+								SendMessage(NET_ERROR,NET_ERROR,3,null);
 								mIsLink=false;
 							}
 						});
@@ -314,7 +493,7 @@ public class SocketClient {
 					handler.post(new Runnable() {
 						public void run() {
 							//textStatus.setText("�������2:" + error);
-							SendMessage(MSG_STATUS,NET_ERROR,2,null);
+							SendMessage(NET_ERROR,NET_ERROR,2,null);
 							mIsLink=false;
 						}
 					});
@@ -323,7 +502,7 @@ public class SocketClient {
 				handler.post(new Runnable() {
 					public void run() {
 						//textStatus.setText("���ӹر�");
-						SendMessage(MSG_STATUS,NET_UNLINK,2,null);
+						SendMessage(NET_UNLINK,NET_UNLINK,2,null);
 						mIsLink=false;
 					}
 				});
@@ -336,7 +515,7 @@ public class SocketClient {
 				{
 					public void run() {
 						//textStatus.setText("�������1:" + error);
-						SendMessage(MSG_STATUS,NET_ERROR,1,null);
+						SendMessage(NET_ERROR,NET_ERROR,1,null);
 						mIsLink=false;
 					}
 				});
