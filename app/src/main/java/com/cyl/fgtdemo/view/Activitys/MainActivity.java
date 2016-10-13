@@ -27,6 +27,7 @@ import com.cyl.fgtdemo.view.Fragments.RecordFragment;
 import com.cyl.fgtdemo.view.Fragments.SecondFragment;
 import com.cyl.fgtdemo.view.Fragments.ThridFragment;
 import com.cyl.fgtdemo.view.Fragments.UploadFragment;
+import com.cyl.libraryview.utils.Dialog;
 
 
 import butterknife.ButterKnife;
@@ -103,11 +104,11 @@ public class MainActivity extends AppCompatActivity implements LoginDialogFragme
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
-          //      if (GlobalData.getInstance().isonline){
+               if (GlobalData.getInstance().isonline){
                 drawerLayout.closeDrawers();
                 position=item.getItemId();
                 selectFragment(item.getItemId(),item.getTitle().toString());
-/*                }else{
+               }else{
                     new AlertDialog.Builder(MainActivity.this)
                             .setTitle("提示")
                             .setMessage("请先登录，然后查看相关信息")
@@ -119,25 +120,10 @@ public class MainActivity extends AppCompatActivity implements LoginDialogFragme
                             })
                             .setNegativeButton("取消", null)
                             .show();
-               *//*     Dialog dialog = new Dialog(MainActivity.this, "温馨提示", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam");
-				dialog.setOnAcceptButtonClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-                        openSignInBrowser();
-					//	Toast.makeText(MainActivity.this, "Click accept button", Toast.LENGTH_SHORT).show();
-					}
-				});
-				dialog.setOnCancelButtonClickListener(new View.OnClickListener() {
 
-					@Override
-					public void onClick(View v) {
-						Toast.makeText(MainActivity.this, "Click cancel button", Toast.LENGTH_SHORT).show();
-					}
-				});
-				dialog.show();*//*
                 //    Snackbar snackbar=new Snackbar()
                //     Toast.makeText(MainActivity.this,"请先登录",Toast.LENGTH_SHORT).show();
-                }*/
+                }
                 return true;
             }
         });
@@ -147,7 +133,6 @@ public class MainActivity extends AppCompatActivity implements LoginDialogFragme
     public void onSelectPicIndex() {
         textView.setText(GlobalData.getInstance().DefaultUser);
         imageView.setImageResource(R.drawable.plasmid);
-
     }
     private void selectFragment(final int fragmentId,final String item) {
         FragmentManager fm = getSupportFragmentManager();
@@ -160,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements LoginDialogFragme
                 if (mainFragment == null) {
                     mainFragment = new MainFragment();
                     // todo diff with transaction.replace() ?
-                    transaction.add(R.id.id_main_frame_container, mainFragment, "mian");
+                    transaction.add(R.id.id_main_frame_container, mainFragment, "main");
                 } else {
                     transaction.show(mainFragment);
                 }
@@ -173,14 +158,14 @@ public class MainActivity extends AppCompatActivity implements LoginDialogFragme
                     transaction.show(repoFragment);
                 }
                 break;
-            case R.id.menu_users:
+           /* case R.id.menu_users:
                 if (null == secondFragment) {
                     secondFragment = new SecondFragment();
                     transaction.add(R.id.id_main_frame_container, secondFragment, "second");
                 } else {
                     transaction.show(secondFragment);
                 }
-                break;
+                break;*/
             case R.id.menu_trending:
                 if (null == thridFragment) {
                     thridFragment = new ThridFragment();
@@ -213,10 +198,10 @@ public class MainActivity extends AppCompatActivity implements LoginDialogFragme
             transaction.hide(mainFragment);
         }
 
-        if (null != secondFragment) {
+       /* if (null != secondFragment) {
             transaction.hide(secondFragment);
         }
-
+*/
         if (null != thridFragment) {
             transaction.hide(thridFragment);
         }
@@ -225,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements LoginDialogFragme
             transaction.hide(repoFragment);
         }
 
-        if (null != recordFragment) {
+       if (null != recordFragment) {
             transaction.hide(recordFragment);
         }
     }

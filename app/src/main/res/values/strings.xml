@@ -17,6 +17,12 @@
     <string name="action_psw">通信密码:</string>
     <string name="action_device">设备序号:</string>
 
+    <string name="User_name">用户名：</string>
+    <string name="old_psw">当前密码：</string>
+    <string name="new_psw">新密码：</string>
+    <string name="qt_psw">确认密码：</string>
+
+
     <!-- menu -->
     <string name="menu_title_user">@string/title_user</string>
     <string name="menu_title_repo">@string/title_repo</string>

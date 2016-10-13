@@ -49,7 +49,7 @@ public class StackActivity extends AppCompatActivity {
             ab.setHomeAsUpIndicator(R.drawable.ic_arrow_back);
         }
         avatar.setImageResource(R.drawable.plasmid);
-        textView.setText("深圳菲格特智能科技有限公司门禁产品手机APP,实现远程开关门，查看全部登记用户，查看考勤记录");
+        textView.setText("深圳菲格特智能科技有限公司门禁产品手机APP,实现远程开关门，查看考勤记录.");
     }
     public static Intent getStartIntent(Context context) {
         Intent intent = new Intent(context, StackActivity.class);

@@ -129,7 +129,7 @@ public class LoginDialogFragment extends DialogFragment {
     }*/
     private boolean checkUserName() {
         String userName = userNameWrapper.getEditText().getText().toString();
-        if (userName.trim().equals("")||!userName.trim().equals("admin"))
+        if (userName.trim().equals("")||!userName.trim().equals(GlobalData.getInstance().DefaultUser))
             return false;
         else
             return true;
@@ -137,7 +137,7 @@ public class LoginDialogFragment extends DialogFragment {
 
     private boolean checkEmail() {
         String email = emailWrapper.getEditText().getText().toString();
-        if (email.trim().equals("")||!email.trim().equals("1010"))
+        if (email.trim().equals("")||!email.trim().equals(GlobalData.getInstance().DefaultPassword))
             return false;
         else
             return true;

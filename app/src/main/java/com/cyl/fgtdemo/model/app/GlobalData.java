@@ -31,8 +31,8 @@ public class GlobalData {
 	public int   IPPort;
 	public String   comm_psw;
 	public int   deviceNum;
-	public String	AdminFingerprint="";
-	public String	AdminPassword="1010";
+/*	public String	AdminFingerprint="admin";
+	public String	AdminPassword="1010";*/
 
 	public List<RecordInfo> recordInfoList=new ArrayList();
 	public List<UserInfo> userInfoList=new ArrayList();

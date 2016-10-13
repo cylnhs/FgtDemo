@@ -156,12 +156,10 @@ public class UploadFragment extends Fragment {
                                     recordInfo.cLogType = "指纹+密码+卡操作";
                                     break;
                             }
-                            if ((int) dest[2] > 127) {
-                                recordInfo.cLogState = "下班";
-                            } else if ((int) dest[2] < 128) {
-                                recordInfo.cLogState = "上班";
-                            } else {
-                                recordInfo.cLogState = "无效";
+                            if ((int) dest[2] <128) {
+                                recordInfo.cLogState = " ";
+                            }else {
+                                recordInfo.cLogState = "※";
                             }
                             byte[] sn = { dest[4], dest[5],dest[6], dest[7]};
                             int sb1 = GlobalData.getInstance().byteToInt2(sn);
@@ -197,7 +195,13 @@ public class UploadFragment extends Fragment {
         btn1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if(ExtApi.IsWifi(getActivity())){
+                    socketClient=new SocketClient(GlobalData.getInstance().IPAddr,Integer.valueOf(GlobalData.getInstance().IPPort));
+                    socketClient.SetMsgHandler(handler);
+                    socketClient.SendCommand((byte) 0xa0,bytes,devsn);
+                }else{
+                    Toast.makeText(getActivity(), "当前无WIFI，请联网操作",Toast.LENGTH_SHORT).show();
+                }
             }
         });
         btn2.setOnClickListener(new View.OnClickListener() {

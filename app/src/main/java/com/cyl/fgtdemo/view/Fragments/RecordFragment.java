@@ -7,8 +7,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.cyl.fgtdemo.R;
+import com.cyl.fgtdemo.model.app.GlobalData;
+import com.cyl.libraryview.Button;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -16,48 +20,20 @@ import org.java_websocket.handshake.ServerHandshake;
 
 
 public class RecordFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-    // The request code must be 0 or greater.
-    private static final int PLUS_ONE_REQUEST_CODE = 0;
-    // The URL to +1.  Must be a valid URL.
-    private final String PLUS_ONE_URL = "http://developer.android.com";
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
+    private EditText User_name;
+    private EditText old_psw;
+    private EditText new_psw;
+    private EditText qt_psw;
+    private Button btn,btn1;
 
     public RecordFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment RecordFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static RecordFragment newInstance(String param1, String param2) {
-        RecordFragment fragment = new RecordFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -65,29 +41,45 @@ public class RecordFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_record, container, false);
-  /*      WebSocketClient webSocketClient=new WebSocketClient("") {
+        User_name=(EditText) view.findViewById(R.id.IP);
+        old_psw=(EditText) view.findViewById(R.id.port);
+        new_psw=(EditText) view.findViewById(R.id.comm_psw);
+        qt_psw=(EditText) view.findViewById(R.id.deviceNum);
+        btn=(Button) view.findViewById(R.id.button);
+        btn1=(Button) view.findViewById(R.id.button1);
+        User_name.setText(GlobalData.getInstance().DefaultUser);
+        btn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onOpen(ServerHandshake handshakedata) {
-
+            public void onClick(View view) {
+                if (checkout()){
+                 if(new_psw.getText().toString().equals(qt_psw.getText().toString())){
+                  if(old_psw.getText().toString().equals(GlobalData.getInstance().DefaultPassword)){
+                       GlobalData.getInstance().DefaultUser=User_name.getText().toString();
+                       GlobalData.getInstance().DefaultPassword=new_psw.getText().toString();
+                       GlobalData.getInstance().SaveConfig();
+                      User_name.setText("");
+                      old_psw.setText("");
+                      new_psw.setText("");
+                      qt_psw.setText("");
+                       Toast.makeText(getActivity(), "保存成功", Toast.LENGTH_SHORT).show();
+                        }else{
+                            Toast.makeText(getActivity(), "当前密码错误", Toast.LENGTH_SHORT).show();
+                        }
+                    }else{
+                        Toast.makeText(getActivity(), "两次密码不一致", Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
-
+        });
+        btn1.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onMessage(String message) {
-
+            public void onClick(View v) {
+                User_name.setText("");
+                old_psw.setText("");
+                new_psw.setText("");
+                qt_psw.setText("");
             }
-
-            @Override
-            public void onClose(int code, String reason, boolean remote) {
-
-            }
-
-            @Override
-            public void onError(Exception ex) {
-
-            }
-        };*/
-
-
+        });
         return view;
     }
 
@@ -111,5 +103,27 @@ public class RecordFragment extends Fragment {
         super.onDetach();
     }
 
-
+    private boolean checkout(){
+        int len=User_name.getText().toString().length();
+        if(len<=0){
+            Toast.makeText(getActivity(), "请输入IP地址", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        len=old_psw.getText().toString().length();
+        if(len<=0){
+            Toast.makeText(getActivity(), "请输入当前密码", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        len=new_psw.getText().toString().length();
+        if(len<=0){
+            Toast.makeText(getActivity(), "请输入新密码", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        len=qt_psw.getText().toString().length();
+        if(len<=0){
+            Toast.makeText(getActivity(), "请输入确认密码", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
 }

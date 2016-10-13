@@ -1,8 +1,90 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RecordFragment">
+    android:orientation="vertical"
+    android:gravity="center"
+    tools:context="com.cyl.fgtdemo.view.Fragments.ThridFragment">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/User_name"/>1
+        <EditText
+            android:id="@+id/IP"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/old_psw"/>
+        <EditText
+            android:id="@+id/port"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/new_psw"/>
+        <EditText
+            android:id="@+id/comm_psw"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/qt_psw"/>
+        <EditText
+            android:id="@+id/deviceNum"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            />
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp">
+        <com.cyl.libraryview.ButtonRectangle
+            android:id="@+id/button1"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:background="#1E88E5"
+            android:text="重置" />
+        <com.cyl.libraryview.ButtonRectangle
+            android:id="@+id/button"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:background="#1E88E5"
+            android:text="保存"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+    </RelativeLayout>
+</LinearLayout>
 
-
-</FrameLayout>

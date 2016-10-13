@@ -5,10 +5,10 @@
             android:id="@+id/menu_dataupload"
             android:icon="@drawable/ic_drawer_register_normal"
             android:title="@string/menu_dataupload"/>
-        <item
+     <!--   <item
             android:id="@+id/menu_users"
             android:icon="@drawable/ic_users"
-            android:title="@string/menu_title_user"/>
+            android:title="@string/menu_title_user"/>-->
         <item
             android:id="@+id/menu_repo"
             android:icon="@drawable/ic_repo"
